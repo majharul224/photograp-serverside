@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
 // const jwt = require("jsonwebtoken");
@@ -29,20 +29,28 @@ async function run() {
     const imageCollection = client.db("photoCollection").collection("services");
     app.get('/services', async (req, res) => {
       const quary = {}
-      const cursor = imageCollection.find(quary).limit(3)
+      const cursor = imageCollection.find(quary)
+      const allServices = await cursor.toArray()
+      // console.log(allServices)
+      res.send(allServices)
+    })
+
+
+    app.get('/threeServices', async (req, res) => {
+      const quary = {}
+      // const cursor = imageCollection.find(quary).limit(3)
       const services = await cursor.toArray()
       // console.log(services)
       res.send(services)
     })
   
-    
-    app.get('/services', async (req, res) => {
-      const quary = {}
-      const cursor = imageCollection.find(quary)
-      const services = await cursor.toArray()
-      // console.log(services)
-      res.send(services)
+    app.get('/services/:id', async (req, res) => {
+      const id= req.params.id;
+      const quary ={_id: ObjectId(id)}
+     const service = await imageCollection.findOne(quary)
+     res.send(service)
     })
+  
 
   }
   finally {
