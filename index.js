@@ -30,7 +30,7 @@ async function run() {
     app.get('/services', async (req, res) => {
       const quary = {}
       const cursor = imageCollection.find(quary)
-      const allServices = await cursor.toArray()
+      const allServices = await cursor.toArray().limit(3)
       // console.log(allServices)
       res.send(allServices)
     })
