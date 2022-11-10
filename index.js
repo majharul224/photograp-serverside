@@ -29,8 +29,18 @@ async function run() {
     const imageCollection = client.db("photoCollection").collection("services");
     app.get('/services', async (req, res) => {
       const quary = {}
+      const cursor = imageCollection.find(quary).limit(3)
+      const services = await cursor.toArray()
+      // console.log(services)
+      res.send(services)
+    })
+  
+    
+    app.get('/services', async (req, res) => {
+      const quary = {}
       const cursor = imageCollection.find(quary)
       const services = await cursor.toArray()
+      // console.log(services)
       res.send(services)
     })
 
