@@ -27,30 +27,58 @@ async function run() {
 
   try {
     const imageCollection = client.db("photoCollection").collection("services");
+    const reviews = client.db("photoCollection").collection("reviews");
+    //service 
     app.get('/services', async (req, res) => {
       const quary = {}
       const cursor = imageCollection.find(quary)
-      const allServices = await cursor.toArray().limit(3)
-      // console.log(allServices)
+      const allServices = await cursor.limit(3).toArray()
       res.send(allServices)
     })
 
-
-    app.get('/threeServices', async (req, res) => {
+// allservices
+    app.get('/items', async (req, res) => {
       const quary = {}
-      // const cursor = imageCollection.find(quary).limit(3)
-      const services = await cursor.toArray()
-      // console.log(services)
-      res.send(services)
+      const cursor = imageCollection.find(quary)
+      const allServices = await cursor.toArray()
+      res.send(allServices)
     })
-  
+
+    // reviewlode
+    app.post("/review", async (req, res) => {
+      const query = req.body;
+      query.date = new Date();
+      const result = await reviews.insertOne(query);
+      res.send(result);
+    });
+
+    // Review Name
+    app.get("/reviews/:name", async (req, res) => {
+      const name = req.params.name;
+      // console.log(name);
+      const query = { name };
+      const result = await reviews.find(query).sort({ date: -1 }).toArray();
+      res.send(result);
+    });
+
+// review email
+    app.get("/myreviews/:userEmail", async (req, res) => {
+      const email = req.params.userEmail;
+      // console.log(email);
+      const query = { email };
+      const result = await reviews.find(query).sort({ date: -1 }).toArray();
+      res.send(result);
+    });
+
+
+
     app.get('/services/:id', async (req, res) => {
-      const id= req.params.id;
-      const quary ={_id: ObjectId(id)}
-     const service = await imageCollection.findOne(quary)
-     res.send(service)
+      const id = req.params.id;
+      const quary = { _id: ObjectId(id) }
+      const service = await imageCollection.findOne(quary)
+      res.send(service)
     })
-  
+
 
   }
   finally {
@@ -58,6 +86,8 @@ async function run() {
   }
 }
 run().catch(error => console.error(error))
+
+
 
 
 
